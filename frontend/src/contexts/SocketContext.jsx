@@ -46,8 +46,13 @@ export const SocketProvider = ({ children }) => {
       console.log('🔌 [SOCKET] Token length:', token?.length || 'No token');
 
       // Initialize socket connection
-      const socketUrl = process.env.REACT_APP_SOCKET_URL || process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+      // Use environment variable if set, otherwise use window.location.origin for production
+      const socketUrl = process.env.REACT_APP_SOCKET_URL ||
+                       process.env.REACT_APP_BACKEND_URL ||
+                       (process.env.NODE_ENV === 'production' ? window.location.origin : 'http://localhost:3000');
       console.log('🔌 [SOCKET] Connecting to:', socketUrl);
+      console.log('🔌 [SOCKET] NODE_ENV:', process.env.NODE_ENV);
+      console.log('🔌 [SOCKET] window.location.origin:', window.location.origin);
       console.log('🔌 [SOCKET] Auth token length:', token?.length);
       console.log('🔌 [SOCKET] User ID:', user.id);
       console.log('🔌 [SOCKET] User role:', user.role);
