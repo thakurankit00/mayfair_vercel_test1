@@ -62,16 +62,47 @@ jobs:
             echo "  ✓ backend/index.js already exists in target branch"
           fi
 
+          # Copy .vercelignore
+          echo "  → Copying .vercelignore"
+          cp workflow-branch/.vercelignore target-branch/.vercelignore
+
+          # Copy frontend build files
+          echo "  → Copying frontend/build-production.js"
+          cp workflow-branch/frontend/build-production.js target-branch/frontend/build-production.js
+
+          echo "  → Copying frontend/.env.production"
+          cp workflow-branch/frontend/.env.production target-branch/frontend/.env.production
+
+          echo "  → Copying frontend/public/manifest.json"
+          mkdir -p target-branch/frontend/public
+          cp workflow-branch/frontend/public/manifest.json target-branch/frontend/public/manifest.json
+
+          # Copy updated SocketContext.jsx
+          echo "  → Copying frontend/src/contexts/SocketContext.jsx"
+          mkdir -p target-branch/frontend/src/contexts
+          cp workflow-branch/frontend/src/contexts/SocketContext.jsx target-branch/frontend/src/contexts/SocketContext.jsx
+
           # Update backend/package.json to add postinstall if missing
           if [ -f "target-branch/backend/package.json" ]; then
             if ! grep -q '"postinstall"' target-branch/backend/package.json; then
               echo "  → Adding postinstall script to backend/package.json"
               # Use jq to add postinstall script
               sudo apt-get install -y jq
-              jq '.scripts.postinstall = "cd ../frontend && npm install && npm run build" | .scripts["vercel-build"] = "cd ../frontend && npm install && npm run build"' \
+              jq '.scripts.postinstall = "cd ../frontend && npm install && npm run build:production" | .scripts["vercel-build"] = "cd ../frontend && npm install && npm run build"' \
                 target-branch/backend/package.json > temp.json && mv temp.json target-branch/backend/package.json
             else
               echo "  ✓ postinstall script already exists in backend/package.json"
+            fi
+          fi
+
+          # Update frontend/package.json to add build:production if missing
+          if [ -f "target-branch/frontend/package.json" ]; then
+            if ! grep -q '"build:production"' target-branch/frontend/package.json; then
+              echo "  → Adding build:production script to frontend/package.json"
+              jq '.scripts["build:production"] = "node build-production.js"' \
+                target-branch/frontend/package.json > temp.json && mv temp.json target-branch/frontend/package.json
+            else
+              echo "  ✓ build:production script already exists in frontend/package.json"
             fi
           fi
 
