@@ -432,15 +432,20 @@ jobs:
         working-directory: ./target-branch
         run: |
           if [ "${{ github.event.inputs.environment }}" == "production" ]; then
-            echo "🌟 Deploying to PRODUCTION..."
+            echo "🌟 Deploying to PRODUCTION (prod.mayfairmandi.com)..."
             DEPLOY_URL=$(vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }})
+            echo "✅ Production deployment complete!"
+            echo "🌐 Production URL: https://prod.mayfairmandi.com"
+            echo "🔗 Vercel URL: $DEPLOY_URL"
           else
-            echo "🔍 Deploying to PREVIEW..."
+            echo "🔍 Deploying to PREVIEW (dev.mayfairmandi.com)..."
             DEPLOY_URL=$(vercel deploy --yes --token=${{ secrets.VERCEL_TOKEN }})
+            echo "✅ Preview deployment complete!"
+            echo "🌐 Preview URL: https://dev.mayfairmandi.com"
+            echo "🔗 Vercel URL: $DEPLOY_URL"
           fi
 
           echo "deployment_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
-          echo "✅ Deployment URL: $DEPLOY_URL"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -452,12 +457,22 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Target Branch:** \`${{ github.event.inputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Environment:** \`${{ github.event.inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Deployment URL:** ${{ steps.deploy.outputs.deployment_url }}" >> $GITHUB_STEP_SUMMARY
+
+          # Add custom domain URLs
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            echo "**🌐 Production URL:** https://prod.mayfairmandi.com" >> $GITHUB_STEP_SUMMARY
+            echo "**🔗 Vercel URL:** ${{ steps.deploy.outputs.deployment_url }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**🌐 Preview URL:** https://dev.mayfairmandi.com" >> $GITHUB_STEP_SUMMARY
+            echo "**🔗 Vercel URL:** ${{ steps.deploy.outputs.deployment_url }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📊 Deployment Details" >> $GITHUB_STEP_SUMMARY
           echo "- **Workflow:** Self-Sufficient (Auto-generated files)" >> $GITHUB_STEP_SUMMARY
           echo "- **Files Generated:** vercel.json, backend/index.js, build scripts, manifest.json, etc." >> $GITHUB_STEP_SUMMARY
           echo "- **No Dependencies:** Completely independent of master branch" >> $GITHUB_STEP_SUMMARY
+          echo "- **Custom Domains:** dev.mayfairmandi.com (preview) | prod.mayfairmandi.com (production)" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Timestamp:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
