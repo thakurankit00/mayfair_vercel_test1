@@ -182,20 +182,15 @@ jobs:
         working-directory: ./target-branch
         run: |
           if [ "${{ github.event.inputs.environment }}" == "production" ]; then
-            echo "🌟 Deploying to PRODUCTION (prod.mayfairmandi.com)..."
+            echo "🌟 Deploying to PRODUCTION..."
             DEPLOY_URL=$(vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }})
-            echo "✅ Production deployment complete!"
-            echo "🌐 Production URL: https://prod.mayfairmandi.com"
-            echo "🔗 Vercel URL: $DEPLOY_URL"
           else
-            echo "🔍 Deploying to PREVIEW (dev.mayfairmandi.com)..."
+            echo "🔍 Deploying to PREVIEW..."
             DEPLOY_URL=$(vercel deploy --yes --token=${{ secrets.VERCEL_TOKEN }})
-            echo "✅ Preview deployment complete!"
-            echo "🌐 Preview URL: https://dev.mayfairmandi.com"
-            echo "🔗 Vercel URL: $DEPLOY_URL"
           fi
 
           echo "deployment_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "✅ Deployment URL: $DEPLOY_URL"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

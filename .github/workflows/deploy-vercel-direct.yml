@@ -115,18 +115,19 @@ jobs:
           if [ "${{ github.event.inputs.environment }}" == "production" ]; then
             echo "🌟 Deploying to PRODUCTION (prod.mayfairmandi.com)..."
             DEPLOY_URL=$(vercel deploy --prod --yes --token=${{ secrets.VERCEL_TOKEN }})
-            echo "✅ Production deployment complete!"
-            echo "🌐 Production URL: https://prod.mayfairmandi.com"
-            echo "🔗 Vercel URL: $DEPLOY_URL"
+            CUSTOM_URL="https://prod.mayfairmandi.com"
+            echo "🎯 Production URL: $CUSTOM_URL"
           else
             echo "🔍 Deploying to PREVIEW (dev.mayfairmandi.com)..."
             DEPLOY_URL=$(vercel deploy --yes --token=${{ secrets.VERCEL_TOKEN }})
-            echo "✅ Preview deployment complete!"
-            echo "🌐 Preview URL: https://dev.mayfairmandi.com"
-            echo "🔗 Vercel URL: $DEPLOY_URL"
+            CUSTOM_URL="https://dev.mayfairmandi.com"
+            echo "🎯 Preview URL: $CUSTOM_URL"
           fi
 
           echo "deployment_url=$DEPLOY_URL" >> $GITHUB_OUTPUT
+          echo "custom_url=$CUSTOM_URL" >> $GITHUB_OUTPUT
+          echo "✅ Vercel Deployment URL: $DEPLOY_URL"
+          echo "✅ Custom Domain URL: $CUSTOM_URL"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -138,10 +139,14 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Branch:** \`${{ github.event.inputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
           echo "**Environment:** \`${{ github.event.inputs.environment }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Deployment URL:** ${{ steps.deploy.outputs.deployment_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🌐 Access URLs" >> $GITHUB_STEP_SUMMARY
+          echo "- **Custom Domain:** ${{ steps.deploy.outputs.custom_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Vercel URL:** ${{ steps.deploy.outputs.deployment_url }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📊 Deployment Details" >> $GITHUB_STEP_SUMMARY
           echo "- **Workflow:** Direct (No file injection)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Custom Domains:** dev.mayfairmandi.com (preview) | prod.mayfairmandi.com (production)" >> $GITHUB_STEP_SUMMARY
           echo "- **Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Triggered by:** @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Timestamp:** $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
