@@ -1,6 +1,6 @@
 /**
  * Vercel Entry Point for Mayfair Hotel Management System
- * 
+ *
  * Simplified version that works reliably in serverless environment
  */
 
@@ -53,6 +53,20 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Mirror health endpoint under /api for consistency with external checks
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      status: 'OK',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'production',
+      version: '1.0.0'
+    }
+  });
+});
+
+
 // Simple test endpoint
 app.get('/api/test', (req, res) => {
   res.status(200).json({
@@ -71,7 +85,7 @@ try {
   const bookingRoutes = require('./src/routes/bookings');
   const restaurantRoutes = require('./src/routes/restaurant');
   const uploadRoutes = require('./src/routes/upload');
-  const reportsRoutes = require('./src/routes/reports');
+  // Reports routes are optional; will be required in a safe block below
 
   // API routes
   app.use('/api/v1/auth', authRoutes);
@@ -81,8 +95,13 @@ try {
   app.use('/api/v1/bookings', bookingRoutes);
   app.use('/api/v1/restaurant', restaurantRoutes);
   app.use('/api/v1/upload', uploadRoutes);
-  app.use('/api/v1/reports', reportsRoutes);
-  
+  try {
+    const reportsRoutes = require('./src/routes/reports');
+    app.use('/api/v1/reports', reportsRoutes);
+  } catch (err) {
+    console.log('Reports routes not available:', err.message);
+  }
+
   try {
     const paymentsRoutes = require('./src/routes/payments');
     app.use('/api/v1/payments', paymentsRoutes);
@@ -100,7 +119,7 @@ try {
 
 } catch (error) {
   console.error('Error loading routes:', error);
-  
+
   // Fallback API endpoint
   app.use('/api/*', (req, res) => {
     res.status(503).json({
