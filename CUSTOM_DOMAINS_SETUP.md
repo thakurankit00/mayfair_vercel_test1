@@ -1,261 +1,188 @@
-# 🌐 Custom Domains Setup - Mayfair Hotel
+# 🌐 Custom Domains Setup - Mayfair Hotel Management
 
 ## 🎯 Domain Configuration
 
-Your Mayfair Hotel Management System now uses **custom domains** for different environments:
+The Mayfair Hotel Management System now uses **custom domains** for different environments:
 
 | Environment | Domain | Purpose |
 |-------------|--------|---------|
-| **Preview** | `dev.mayfairmandi.com` | Development & testing deployments |
-| **Production** | `prod.mayfairmandi.com` | Live production deployments |
+| **Preview** | `dev.mayfairmandi.com` | Development and testing |
+| **Production** | `prod.mayfairmandi.com` | Live production environment |
 
 ## 🚀 How It Works
 
-### Automatic Domain Routing
-When you run any deployment workflow and select an environment:
+### Automatic Domain Assignment
+When you run any deployment workflow:
 
-#### Preview Environment
-- **Workflow Selection:** `preview`
-- **Vercel Command:** `vercel deploy --yes`
-- **Result:** Deploys to `dev.mayfairmandi.com`
-- **Use Case:** Feature testing, development, staging
+1. **Select "preview"** → Deploys to `dev.mayfairmandi.com`
+2. **Select "production"** → Deploys to `prod.mayfairmandi.com`
 
-#### Production Environment  
-- **Workflow Selection:** `production`
-- **Vercel Command:** `vercel deploy --prod --yes`
-- **Result:** Deploys to `prod.mayfairmandi.com`
-- **Use Case:** Live production site
+### Workflow Integration
+All workflows now automatically:
+- ✅ Deploy to the correct Vercel environment
+- ✅ Display both Vercel URL and custom domain
+- ✅ Show clear environment indicators
+- ✅ Provide direct access links
 
-### Updated Workflow Behavior
+## 📋 Updated Workflows
 
-All workflows now show clear domain information:
+### 1. Deploy Any Branch (Self-Sufficient)
+- **Preview**: Deploys any branch to `dev.mayfairmandi.com`
+- **Production**: Deploys any branch to `prod.mayfairmandi.com`
 
-```bash
-🔍 Deploying to PREVIEW (dev.mayfairmandi.com)...
-✅ Preview deployment complete!
-🌐 Preview URL: https://dev.mayfairmandi.com
-🔗 Vercel URL: https://mayfair-hotel-abc123.vercel.app
+### 2. Deploy to Vercel (Direct)
+- **Preview**: Deploys master/branches to `dev.mayfairmandi.com`
+- **Production**: Deploys master/branches to `prod.mayfairmandi.com`
+
+### 3. Deploy Any Branch (Legacy)
+- **Preview**: Deploys with file injection to `dev.mayfairmandi.com`
+- **Production**: Deploys with file injection to `prod.mayfairmandi.com`
+
+## 🎯 Usage Examples
+
+### Example 1: Feature Branch Testing
 ```
-
-```bash
-🌟 Deploying to PRODUCTION (prod.mayfairmandi.com)...
-✅ Production deployment complete!
-🌐 Production URL: https://prod.mayfairmandi.com
-🔗 Vercel URL: https://mayfair-hotel-xyz789.vercel.app
-```
-
----
-
-## 📋 Deployment Workflows
-
-### 1. Self-Sufficient Deployment (Recommended)
-**Workflow:** `Deploy Any Branch to Vercel (Self-Sufficient)`
-
-**Usage:**
-```
+Workflow: Deploy Any Branch (Self-Sufficient)
 Branch: feature/latest-features
-Environment: preview → Deploys to dev.mayfairmandi.com
-Environment: production → Deploys to prod.mayfairmandi.com
+Environment: preview
+Result: https://dev.mayfairmandi.com
 ```
 
-### 2. Direct Deployment
-**Workflow:** `Deploy to Vercel (Direct)`
-
-**Usage:**
+### Example 2: Production Release
 ```
+Workflow: Deploy to Vercel (Direct)
 Branch: master
-Environment: preview → Deploys to dev.mayfairmandi.com
-Environment: production → Deploys to prod.mayfairmandi.com
+Environment: production
+Result: https://prod.mayfairmandi.com
 ```
 
-### 3. Any Branch Deployment
-**Workflow:** `Deploy Any Branch to Vercel`
-
-**Usage:**
+### Example 3: Hotfix Deployment
 ```
-Branch: any-branch-name
-Source Branch: master
-Environment: preview → Deploys to dev.mayfairmandi.com
-Environment: production → Deploys to prod.mayfairmandi.com
+Workflow: Deploy Any Branch (Self-Sufficient)
+Branch: hotfix/critical-bug
+Environment: production
+Result: https://prod.mayfairmandi.com
 ```
 
----
-
-## 🔧 Vercel Project Configuration
-
-### Domain Setup in Vercel Dashboard
-
-Your Vercel project should be configured with:
-
-#### Production Domain
-- **Domain:** `prod.mayfairmandi.com`
-- **Type:** Production
-- **SSL:** Automatic (Let's Encrypt)
-- **Redirects:** All traffic to HTTPS
-
-#### Preview Domain
-- **Domain:** `dev.mayfairmandi.com`
-- **Type:** Preview
-- **SSL:** Automatic (Let's Encrypt)
-- **Redirects:** All traffic to HTTPS
-
-### DNS Configuration
-
-Your DNS should point to Vercel:
-
-```dns
-# A Records
-prod.mayfairmandi.com → 76.76.19.61
-dev.mayfairmandi.com → 76.76.19.61
-
-# CNAME Records (Alternative)
-prod.mayfairmandi.com → cname.vercel-dns.com
-dev.mayfairmandi.com → cname.vercel-dns.com
-```
-
----
-
-## 🎯 Environment Strategy
-
-### Development Workflow
-1. **Feature Development**
-   - Create feature branch
-   - Deploy to `preview` → `dev.mayfairmandi.com`
-   - Test functionality
-   - Share with team for review
-
-2. **Production Release**
-   - Merge to master
-   - Deploy to `production` → `prod.mayfairmandi.com`
-   - Monitor live site
-
-### Testing Strategy
-```
-Feature Branch → dev.mayfairmandi.com (testing)
-     ↓
-Master Branch → dev.mayfairmandi.com (staging)
-     ↓
-Master Branch → prod.mayfairmandi.com (production)
-```
-
----
-
-## 🔍 Deployment Summary
+## 📊 Deployment Summary
 
 After deployment, you'll see:
 
-### Preview Deployment Summary
 ```
-## 🚀 Self-Sufficient Deployment Complete!
+## 🚀 Deployment Complete!
 
 **Target Branch:** feature/latest-features
 **Environment:** preview
-**🌐 Preview URL:** https://dev.mayfairmandi.com
-**🔗 Vercel URL:** https://mayfair-hotel-abc123.vercel.app
 
-### 📊 Deployment Details
-- **Workflow:** Self-Sufficient (Auto-generated files)
-- **Files Generated:** vercel.json, backend/index.js, build scripts, manifest.json, etc.
-- **No Dependencies:** Completely independent of master branch
-- **Custom Domains:** dev.mayfairmandi.com (preview) | prod.mayfairmandi.com (production)
-```
-
-### Production Deployment Summary
-```
-## 🚀 Self-Sufficient Deployment Complete!
-
-**Target Branch:** master
-**Environment:** production
-**🌐 Production URL:** https://prod.mayfairmandi.com
-**🔗 Vercel URL:** https://mayfair-hotel-xyz789.vercel.app
+### 🌐 Access URLs
+- **Custom Domain:** https://dev.mayfairmandi.com
+- **Vercel URL:** https://mayfair-hotel-abc123.vercel.app
 
 ### 📊 Deployment Details
 - **Workflow:** Self-Sufficient (Auto-generated files)
 - **Custom Domains:** dev.mayfairmandi.com (preview) | prod.mayfairmandi.com (production)
+- **Commit:** abc123def
+- **Triggered by:** @developer
+- **Timestamp:** 2024-01-15 10:30:00 UTC
 ```
 
----
+## 🔧 Technical Details
 
-## 🛠️ Troubleshooting
+### Domain Mapping
+- **Vercel Project**: Configured with custom domains
+- **DNS Setup**: Points to Vercel's edge network
+- **SSL Certificates**: Automatically managed by Vercel
+- **CDN**: Global edge caching enabled
+
+### Environment Variables
+Both domains use the same environment variables configured in Vercel dashboard:
+- Database connections
+- API keys
+- Third-party integrations
+- Payment gateway settings
+
+### Database Considerations
+⚠️ **Important**: Both environments may share the same database. Consider:
+- Using separate databases for dev/prod
+- Being careful with data modifications in preview
+- Testing thoroughly before production deployments
+
+## 🎯 Best Practices
+
+### 1. Development Workflow
+1. **Feature Development** → Deploy to `dev.mayfairmandi.com`
+2. **Testing & QA** → Verify on `dev.mayfairmandi.com`
+3. **Production Release** → Deploy to `prod.mayfairmandi.com`
+
+### 2. Environment Usage
+- **dev.mayfairmandi.com**: 
+  - Feature testing
+  - Integration testing
+  - Demo purposes
+  - Client previews
+  
+- **prod.mayfairmandi.com**:
+  - Live hotel operations
+  - Customer-facing features
+  - Production data
+  - Critical business functions
+
+### 3. Deployment Strategy
+- **Always test on preview first**
+- **Use production sparingly**
+- **Monitor both environments**
+- **Keep environments in sync**
+
+## 🔍 Troubleshooting
 
 ### Common Issues
 
-#### 1. Domain Not Resolving
-**Issue:** `dev.mayfairmandi.com` or `prod.mayfairmandi.com` not loading
-**Solutions:**
-- Check DNS propagation (can take up to 48 hours)
-- Verify domain configuration in Vercel dashboard
-- Ensure SSL certificates are active
+#### 1. Domain Not Accessible
+**Issue**: Custom domain shows error
+**Solution**: 
+- Check Vercel domain configuration
+- Verify DNS settings
+- Wait for propagation (up to 24 hours)
 
-#### 2. Wrong Domain After Deployment
-**Issue:** Deployment goes to wrong domain
-**Solutions:**
-- Check environment selection in workflow
-- Verify Vercel project domain settings
-- Ensure `--prod` flag usage is correct
+#### 2. Wrong Environment
+**Issue**: Deployed to wrong domain
+**Solution**:
+- Check workflow environment selection
+- Re-run workflow with correct environment
+- Verify Vercel project settings
 
 #### 3. SSL Certificate Issues
-**Issue:** HTTPS not working
-**Solutions:**
-- Wait for automatic SSL provisioning (up to 24 hours)
-- Check domain verification in Vercel
-- Ensure DNS records are correct
+**Issue**: HTTPS not working
+**Solution**:
+- Vercel automatically handles SSL
+- Wait for certificate provisioning
+- Check domain verification status
 
-### Debug Commands
+## 🌟 Benefits
 
-```bash
-# Check DNS resolution
-nslookup dev.mayfairmandi.com
-nslookup prod.mayfairmandi.com
+### For Developers
+- ✅ **Clear environment separation**
+- ✅ **Easy testing and preview**
+- ✅ **Professional domain names**
+- ✅ **Simplified deployment process**
 
-# Test SSL
-curl -I https://dev.mayfairmandi.com
-curl -I https://prod.mayfairmandi.com
+### For Stakeholders
+- ✅ **Branded domain names**
+- ✅ **Reliable preview environment**
+- ✅ **Professional presentation**
+- ✅ **Easy access for testing**
 
-# Check domain status
-vercel domains ls
-```
+### For Operations
+- ✅ **Environment isolation**
+- ✅ **Reduced production risks**
+- ✅ **Better monitoring capabilities**
+- ✅ **Streamlined deployment pipeline**
 
----
+## 🎉 Ready to Deploy!
 
-## 🎉 Benefits
+Your custom domain setup is complete! 🚀
 
-### Professional Setup
-- ✅ **Custom branded domains** instead of vercel.app URLs
-- ✅ **Environment separation** (dev vs prod)
-- ✅ **SSL certificates** automatically managed
-- ✅ **Professional appearance** for clients/stakeholders
+- **Preview Environment**: `https://dev.mayfairmandi.com`
+- **Production Environment**: `https://prod.mayfairmandi.com`
 
-### Development Benefits
-- ✅ **Clear environment distinction**
-- ✅ **Easy sharing** with team members
-- ✅ **Consistent URLs** across deployments
-- ✅ **SEO-friendly** production domain
-
-### Operational Benefits
-- ✅ **Zero configuration** required in workflows
-- ✅ **Automatic routing** based on environment
-- ✅ **Clear deployment logs** showing target domains
-- ✅ **Professional deployment summaries**
-
----
-
-## 🚀 Next Steps
-
-1. **Test Preview Deployment**
-   - Deploy any feature branch to `preview`
-   - Verify `dev.mayfairmandi.com` loads correctly
-
-2. **Test Production Deployment**
-   - Deploy master branch to `production`
-   - Verify `prod.mayfairmandi.com` loads correctly
-
-3. **Share URLs**
-   - Use `dev.mayfairmandi.com` for development testing
-   - Use `prod.mayfairmandi.com` for live production
-
-4. **Monitor Performance**
-   - Set up monitoring for both domains
-   - Configure alerts for downtime
-
-**Your Mayfair Hotel Management System is now professionally deployed with custom domains!** 🏨✨
+Use any workflow and select the appropriate environment to deploy to your custom domains!
