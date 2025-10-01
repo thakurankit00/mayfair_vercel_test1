@@ -1,23 +1,14 @@
-name: Deploy Any Branch - Dual Environment (Self-Sufficient)
-
-# This workflow can deploy ANY branch to BOTH environments simultaneously!
-# ✅ Preview: dev.mayfairmandi.com | ✅ Production: prod.mayfairmandi.com
-# No dependency on master branch - completely self-sufficient!
-
+name: Deploy to Vercel (dual env)
 on:
   workflow_dispatch:
     inputs:
-      branch:
-        description: 'Branch to deploy (can be any branch)'
-        required: true
-        default: 'master'
       deploy_preview:
-        description: 'Deploy to Preview (dev.mayfairmandi.com)'
+        description: 'deploy dev'
         required: false
         type: boolean
         default: true
       deploy_production:
-        description: 'Deploy to Production (prod.mayfairmandi.com)'
+        description: 'deploy prod'
         required: false
         type: boolean
         default: false
@@ -26,11 +17,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     
-    # Prevent concurrent deployments to the same branch
+    # Prevent concurrent deployments
     concurrency:
-      group: vercel-deploy-dual-${{ github.event.inputs.branch }}
+      group: vercel-deploy-dual-master
       cancel-in-progress: true
-    
+
     steps:
       - name: 🔍 Validate deployment selection
         run: |
@@ -39,19 +30,19 @@ jobs:
             echo "Please check either 'Deploy to Preview' or 'Deploy to Production' (or both)"
             exit 1
           fi
-          
+
           echo "✅ Deployment validation passed!"
           if [ "${{ github.event.inputs.deploy_preview }}" == "true" ]; then
-            echo "  → Preview deployment: ENABLED (dev.mayfairmandi.com)"
+            echo "  → Preview deployment: ENABLED"
           fi
           if [ "${{ github.event.inputs.deploy_production }}" == "true" ]; then
-            echo "  → Production deployment: ENABLED (prod.mayfairmandi.com)"
+            echo "  → Production deployment: ENABLED"
           fi
 
-      - name: 📥 Checkout target branch (to deploy)
+      - name: 📥 Checkout master branch (to deploy)
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch }}
+          ref: master
           fetch-depth: 0
           path: target-branch
 
@@ -486,7 +477,7 @@ jobs:
         run: |
           echo "## 🚀 Dual Environment Deployment Complete!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Target Branch:** \`${{ github.event.inputs.branch }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Target Branch:** \`master\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
           # Preview Environment Summary
