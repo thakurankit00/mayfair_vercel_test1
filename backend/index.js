@@ -11,6 +11,8 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
+const db = require('./src/config/database');
+
 
 const app = express();
 
@@ -74,6 +76,17 @@ app.get('/api/test', (req, res) => {
     message: 'API is working!',
     timestamp: new Date().toISOString()
   });
+});
+
+// Database health check
+app.get('/api/db-health', async (req, res) => {
+  try {
+    const result = await db.raw('SELECT 1 as ok');
+    const ok = result?.rows ? result.rows[0]?.ok : (Array.isArray(result) ? (result[0]?.ok ?? result[0]?.[0]?.ok) : 1);
+    res.status(200).json({ success: true, data: { db: 'up', ok } });
+  } catch (error) {
+    res.status(500).json({ success: false, error: { code: 'DB_UNAVAILABLE', message: error.message } });
+  }
 });
 
 // Import and use routes (with error handling)
