@@ -89,47 +89,28 @@ app.get('/api/db-health', async (req, res) => {
   }
 });
 
-// Import and use routes (with error handling)
+// Import and auto-mount routes (vercel-friendly, per-file safe)
 try {
-  const authRoutes = require('./src/routes/auth');
-  const userRoutes = require('./src/routes/users');
-  const dashboardRoutes = require('./src/routes/dashboard');
-  const roomRoutes = require('./src/routes/rooms');
-  const bookingRoutes = require('./src/routes/bookings');
-  const restaurantRoutes = require('./src/routes/restaurant');
-  const uploadRoutes = require('./src/routes/upload');
-  // Reports routes are optional; will be required in a safe block below
+  const fs = require('fs');
+  const routesDir = path.join(__dirname, 'src', 'routes');
+  const files = fs.readdirSync(routesDir).filter((f) => f.endsWith('.js'));
+  const baseOverrides = { notificationRoutes: 'notifications' };
 
-  // API routes
-  app.use('/api/v1/auth', authRoutes);
-  app.use('/api/v1/users', userRoutes);
-  app.use('/api/v1/dashboard', dashboardRoutes);
-  app.use('/api/v1/rooms', roomRoutes);
-  app.use('/api/v1/bookings', bookingRoutes);
-  app.use('/api/v1/restaurant', restaurantRoutes);
-  app.use('/api/v1/upload', uploadRoutes);
-  try {
-    const reportsRoutes = require('./src/routes/reports');
-    app.use('/api/v1/reports', reportsRoutes);
-  } catch (err) {
-    console.log('Reports routes not available:', err.message);
-  }
-
-  try {
-    const paymentsRoutes = require('./src/routes/payments');
-    app.use('/api/v1/payments', paymentsRoutes);
-  } catch (err) {
-    console.log('Payments routes not available:', err.message);
-  }
-
-  // Notifications route (optional - was disabled in original)
-  try {
-    const notificationRoutes = require('./src/routes/notificationRoutes');
-    app.use('/api/v1/notifications', notificationRoutes);
-  } catch (err) {
-    console.log('Notification routes not available:', err.message);
-  }
-
+  files.forEach((file) => {
+    const name = file.replace(/\.js$/i, '');
+    const base = baseOverrides[name] || name;
+    try {
+      const router = require(path.join(routesDir, file));
+      if (router && typeof router === 'function') {
+        app.use(`/api/v1/${base}`, router);
+        console.log(`Mounted /api/v1/${base}`);
+      } else {
+        console.warn(`Skipped ${file}: export is not an Express router`);
+      }
+    } catch (err) {
+      console.log(`Route "${file}" not available: ${err.message}`);
+    }
+  });
 } catch (error) {
   console.error('Error loading routes:', error);
 
